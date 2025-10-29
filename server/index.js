@@ -10,16 +10,31 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:5173', // dev
   'https://huiling97.github.io', // prod
+  'https://huiling97.github.io/pacdora-build', // if using project pages
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // allow server-to-server or curl
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      callback(new Error('Not allowed by CORS'));
+      // Allow requests with no origin (like mobile apps, curl, postman)
+      if (!origin) return callback(null, true);
+
+      // Check if the origin is in the allowed list
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        return callback(null, true);
+      } else {
+        console.log('Blocked by CORS:', origin);
+        return callback(new Error('Not allowed by CORS'), false);
+      }
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'x-pacdora-appid',
+      'x-pacdora-appkey',
+    ],
   })
 );
 
