@@ -15,15 +15,14 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
+      if (!origin) return callback(null, true); // allow server-to-server or curl
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
   })
 );
+
 app.use(express.json());
 
 // Start export
