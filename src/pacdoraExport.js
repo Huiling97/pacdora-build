@@ -1,9 +1,11 @@
+const API_BASE = 'https://pacdora-build.onrender.com';
+
 export const exportPacdoraProject = async (
   fileType,
   projectIds,
   config = {}
 ) => {
-  const response = await fetch(`http://localhost:5001/api/export/${fileType}`, {
+  const response = await fetch(`${API_BASE}/api/export/${fileType}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ projectIds, config }),
@@ -25,7 +27,7 @@ export const pollExportStatus = (
     const timerId = setInterval(async () => {
       try {
         const response = await fetch(
-          `http://localhost:5001/api/export-status/${fileType}?taskId=${taskId}`
+          `${API_BASE}/api/export-status/${fileType}?taskId=${taskId}`
         );
         if (!response.ok) throw new Error(`HTTP error ${response.status}`);
 
