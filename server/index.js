@@ -9,27 +9,25 @@ const app = express();
 
 const allowedOrigins = [
   'http://localhost:5173', // dev
-  'https://huiling97.github.io', // prod
-  'https://huiling97.github.io/pacdora-build', // if using project pages
-  'https://pacdora-build.onrender.com/api/export/pdf',
+  'https://huiling97.github.io', // your GitHub Pages domain
+  'https://pacdora-build.onrender.com', // your Render backend
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps, curl, postman)
+      // Allow requests with no origin (like curl/Postman)
       if (!origin) return callback(null, true);
 
-      // Check if the origin is in the allowed list
-      if (allowedOrigins.indexOf(origin) !== -1) {
-        return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
       } else {
-        console.log('Blocked by CORS:', origin);
-        return callback(new Error('Not allowed by CORS'), false);
+        console.log('🚫 Blocked by CORS:', origin);
+        callback(new Error('Not allowed by CORS'));
       }
     },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: [
       'Content-Type',
       'Authorization',
@@ -92,4 +90,5 @@ app.get('/api/export-status/:fileType', async (req, res) => {
   }
 });
 
-app.listen(5001, () => console.log('Server running on http://localhost:5001'));
+const PORT = process.env.PORT || 5001;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
