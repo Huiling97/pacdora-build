@@ -11,6 +11,7 @@ const allowedOrigins = [
   'http://localhost:5173', // dev
   'https://huiling97.github.io', // prod
   'https://huiling97.github.io/pacdora-build', // if using project pages
+  'https://pacdora-build.onrender.com/api/export/pdf',
 ];
 
 app.use(
