@@ -6,8 +6,23 @@ import https from 'https';
 
 dotenv.config();
 const app = express();
+
+const allowedOrigins = [
+  'http://localhost:5173', // dev
+  'https://huiling97.github.io', // prod
+];
+
 app.use(
-  cors({ origin: 'https://pacdora-backend.onrender.com', credentials: true })
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+  })
 );
 app.use(express.json());
 
