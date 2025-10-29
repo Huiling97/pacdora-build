@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { exportPacdoraProject, pollExportStatus } from './pacdoraExport';
 
 let count = 0;
 
@@ -48,6 +49,21 @@ const App = () => {
     loadPacdora();
   }, []);
 
+  const handleExport = async () => {
+    try {
+      const taskId = await exportPacdoraProject('pdf', [50180489]);
+      alert(`Export started! Task ID: ${taskId}`);
+
+      const result = await pollExportStatus('pdf', taskId);
+      console.log('res', result);
+      if (result) {
+        alert(`Export finished! File URL: ${result.filePath}`);
+      }
+    } catch (err) {
+      alert(`Export failed: ${err.message}`);
+    }
+  };
+
   return (
     <div style={{ padding: '20px' }}>
       <h1>Pacdora 3D Example</h1>
@@ -87,6 +103,21 @@ const App = () => {
       >
         Design Online
       </div>
+
+      <button
+        onClick={handleExport}
+        style={{
+          marginTop: '20px',
+          padding: '10px 20px',
+          backgroundColor: '#28a745',
+          color: '#fff',
+          border: 'none',
+          cursor: 'pointer',
+          borderRadius: '8px',
+        }}
+      >
+        Export Project
+      </button>
 
       <div data-quotation-ui='select' data-quotation-form></div>
     </div>

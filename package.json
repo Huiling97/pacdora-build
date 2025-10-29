@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "server": "NODE_TLS_REJECT_UNAUTHORIZED=0 node server/index.js",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -12,6 +13,8 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
