@@ -8,9 +8,9 @@ dotenv.config();
 const app = express();
 
 const allowedOrigins = [
-  'http://localhost:5173', // dev
-  'https://huiling97.github.io', // your GitHub Pages domain
-  'https://pacdora-build.onrender.com', // your Render backend
+  'http://localhost:5173',
+  'https://huiling97.github.io',
+  'https://pacdora-build.onrender.com',
 ];
 
 app.use(

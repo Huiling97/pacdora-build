@@ -1,9 +1,14 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { exportPacdoraProject, pollExportStatus } from './pacdoraExport';
+import MaterialSelector from './components/materialSelector';
+import SizeSelector from './components/sizeSelector';
 
 let count = 0;
 
 const App = () => {
+  const [pacdoraLoaded, setPacdoraLoaded] = useState(false);
+  const [screenshotLink, setScreenshotLink] = useState('');
+
   useEffect(() => {
     const loadPacdora = async () => {
       try {
@@ -33,10 +38,10 @@ const App = () => {
           packagingColors: ['#ff0000', '#00ff00', '#0000ff', '#893829'],
         });
 
-        // Add a small delay to ensure scene is fully rendered
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        // Force UI render
+        setPacdoraLoaded(true);
+
         if (!count) {
           loadPacdora();
           count++;
@@ -49,13 +54,37 @@ const App = () => {
     loadPacdora();
   }, []);
 
+  const handleScreenshot = async () => {
+    if (!window.Pacdora) return alert('Pacdora not ready yet.');
+    setScreenshotLink('');
+
+    try {
+      const data = await Pacdora.getBoxInfo();
+      console.log('data', data);
+      if (data.screenshot) {
+        setScreenshotLink(`https:${data.screenshot}`);
+      } else {
+        console.warn('No screenshot data returned.');
+      }
+    } catch (error) {
+      console.error('Screenshot failed:', error);
+    }
+  };
+
+  const handleOpenScreenshot = () => {
+    if (!screenshotLink) {
+      alert('Please capture a screenshot first.');
+      return;
+    }
+    window.open(screenshotLink, '_blank');
+  };
+
   const handleExport = async () => {
     try {
       const taskId = await exportPacdoraProject('pdf', [50180489]);
       alert(`Export started! Task ID: ${taskId}`);
 
       const result = await pollExportStatus('pdf', taskId);
-      console.log('res', result);
       if (result) {
         alert(`Export finished! File URL: ${result.filePath}`);
       }
@@ -69,7 +98,6 @@ const App = () => {
       <h1>Pacdora 3D Example</h1>
 
       <div id='pacdora-container'>
-        <div data-pacdora-ui='3d-preview'></div>
         <div
           data-pacdora-ui='3d'
           data-show-slider='true'
@@ -107,7 +135,7 @@ const App = () => {
       <button
         onClick={handleExport}
         style={{
-          marginTop: '20px',
+          marginTop: '10px',
           padding: '10px 20px',
           backgroundColor: '#28a745',
           color: '#fff',
@@ -119,7 +147,24 @@ const App = () => {
         Export Project
       </button>
 
-      <div data-quotation-ui='select' data-quotation-form></div>
+      <div style={{ marginTop: '20px' }}>
+        <button onClick={handleScreenshot} disabled={!pacdoraLoaded}>
+          Capture Screenshot
+        </button>
+
+        <button
+          onClick={handleOpenScreenshot}
+          disabled={!screenshotLink}
+          style={{ marginLeft: '10px' }}
+        >
+          Open Screenshot
+        </button>
+      </div>
+
+      <hr style={{ margin: '30px 0' }} />
+
+      <MaterialSelector />
+      <SizeSelector />
     </div>
   );
 };
